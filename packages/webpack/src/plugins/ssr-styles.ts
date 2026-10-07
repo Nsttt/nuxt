@@ -289,7 +289,7 @@ export class SSRStylesPlugin {
       for (const module of compilation.modules) {
         const normal = module as NormalModule
         const resource = normal.resource
-        if (!resource || !isVueFile(resource)) { continue }
+        if (!resource || !isVueFile(resource) || !this.shouldInline(module)) { continue }
         const rel = normalizePath(this.nuxt, resource)
         if (!rel) { continue }
         if (collected.has(rel)) { continue }

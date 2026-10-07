@@ -1366,7 +1366,7 @@ describe('errors', () => {
 
   // TODO: need to create test for webpack
   // TODO: need to fix this test for rspack
-  it.runIf(!isDev && builder !== 'rspack')('should handle chunk loading errors', async () => {
+  it.runIf(!isDev && builder !== 'rspack' && builder !== 'rsbuild')('should handle chunk loading errors', async () => {
     const { page, consoleLogs } = await renderPage()
     await page.route(/\.css/, route => route.abort('timedout')) // verify CSS link preload failure doesn't break the page
     await page.goto(url('/'))
@@ -2058,11 +2058,13 @@ describe.skipIf(isDev)('inlining component styles', () => {
     // TODO: currently functional component not associated with ssrContext (upstream bug or perf optimization?)
     // '{--functional:"functional"}', // CSS imported ambiently in a functional component
   ]
+  // Lightning CSS (used by Rsbuild) merges adjacent rules with the same selector when minifying
+  const normalizeStyle = (style: string) => builder === 'rsbuild' ? style.replace(/^\{|\}$/g, '') : style
 
   it('should inline styles', async () => {
     const html = await $fetch<string>('/styles')
     for (const style of inlinedCSS) {
-      expect.soft(html).toContain(style)
+      expect.soft(html).toContain(normalizeStyle(style))
     }
   })
 
@@ -2097,10 +2099,10 @@ describe.skipIf(isDev)('inlining component styles', () => {
       }
       // webpack can hoist component level css up to a shared css file
       if (isWebpack && nonGlobalCSS.includes(style)) {
-        expect.soft(css).toContain(style)
+        expect.soft(css).toContain(normalizeStyle(style))
         continue
       }
-      expect.soft(css).not.toContain(style)
+      expect.soft(css).not.toContain(normalizeStyle(style))
     }
 
     // should include unloadable CSS in generated CSS file

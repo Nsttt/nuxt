@@ -986,8 +986,8 @@ export async function bundle (nuxt: Nuxt & { _nitro?: Nitro }): Promise<void> {
   // nuxt dev
   let waitUntilCompile: Promise<void> | undefined
   if (nuxt.options.dev) {
-    for (const builder of ['webpack', 'rspack'] as const) {
-      nuxt.hook(`${builder}:compile`, ({ name, compiler }) => {
+    for (const builder of ['webpack', 'rspack', 'rsbuild'] as const) {
+      nuxt.hook(`${builder}:compile`, ({ name, compiler }: { name: string, compiler: { outputFileSystem?: unknown } }) => {
         if (name === 'server') {
           const memfs = compiler.outputFileSystem as typeof import('node:fs')
           nitro.options.virtual['#build/dist/server/server.mjs'] = () => memfs.readFileSync(join(nuxt.options.buildDir, 'dist/server/server.mjs'), 'utf-8')

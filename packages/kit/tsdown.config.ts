@@ -6,6 +6,7 @@ export default defineConfig({
   deps: {
     onlyBundle: [],
     neverBundle: [
+      '@rsbuild/core',
       '@rspack/core',
       '@nuxt/schema',
       'nitro/types',

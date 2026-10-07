@@ -43,7 +43,7 @@ const nuxtTestProjects: Record<string, NuxtConfig> = {
 // Matrix combinations for fixture tests (matches CI matrix with exclusions)
 interface FixtureMatrixEntry {
   env: 'dev' | 'built'
-  builder: 'vite' | 'rspack' | 'webpack'
+  builder: 'vite' | 'rsbuild' | 'rspack' | 'webpack'
   context: 'async' | 'default'
   manifest: 'manifest-on' | 'manifest-off'
 }
@@ -58,6 +58,9 @@ const fixtureMatrix: FixtureMatrixEntry[] = [
   { env: 'built', builder: 'vite', context: 'async', manifest: 'manifest-off' },
   { env: 'built', builder: 'vite', context: 'default', manifest: 'manifest-on' },
   { env: 'built', builder: 'vite', context: 'default', manifest: 'manifest-off' },
+  // rsbuild: only built + manifest-on
+  { env: 'built', builder: 'rsbuild', context: 'async', manifest: 'manifest-on' },
+  { env: 'built', builder: 'rsbuild', context: 'default', manifest: 'manifest-on' },
   // rspack: only built + manifest-on
   { env: 'built', builder: 'rspack', context: 'async', manifest: 'manifest-on' },
   { env: 'built', builder: 'rspack', context: 'default', manifest: 'manifest-on' },

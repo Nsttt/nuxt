@@ -2,6 +2,8 @@ import type { KeepAliveProps, TransitionProps, AppConfig as VueAppConfig } from 
 import type { ServerOptions as ViteServerOptions, UserConfig as ViteUserConfig } from 'vite'
 import type { Options as VuePluginOptions } from '@vitejs/plugin-vue'
 import type { Options as VueJsxPluginOptions } from '@vitejs/plugin-vue-jsx'
+import type { RsbuildConfig } from '@rsbuild/core'
+import type { PluginVueOptions as RsbuildVuePluginOptions } from '@rsbuild/plugin-vue'
 import type { SchemaDefinition } from 'untyped'
 import type { SnakeCase } from 'scule'
 import type { ConfigLayerMeta, DefineConfig, ResolvedConfig, UserInputConfig } from 'c12'
@@ -45,14 +47,16 @@ export interface RuntimeConfig extends RuntimeConfigNamespace {
 // Avoid DeepPartial for some problematic config, including:
 // - nitro config interface (#31908) located in packages/nitro-server/src/augments.ts
 // - vite config interface (#4772)
+// - rsbuild config interface
 
 /**
  * User configuration in `nuxt.config` file
  */
-export interface NuxtConfig extends DeepPartial<Omit<ConfigSchema, 'components' | 'vue' | 'vite' | 'runtimeConfig' | 'webpack' | 'nitro'>> {
+export interface NuxtConfig extends DeepPartial<Omit<ConfigSchema, 'components' | 'vue' | 'vite' | 'rsbuild' | 'runtimeConfig' | 'webpack' | 'nitro'>> {
   components?: ConfigSchema['components']
   vue?: Omit<DeepPartial<ConfigSchema['vue']>, 'config'> & { config?: Partial<Filter<VueAppConfig, string | boolean>> }
   vite?: ConfigSchema['vite']
+  rsbuild?: ConfigSchema['rsbuild']
   runtimeConfig?: Overrideable<RuntimeConfig>
   webpack?: DeepPartial<ConfigSchema['webpack']> & {
     $client?: DeepPartial<ConfigSchema['webpack']>
@@ -95,7 +99,7 @@ export interface NuxtOptions extends Omit<ConfigSchema, 'vue' | 'sourcemap' | 'd
   vue: Omit<ConfigSchema['vue'], 'config'> & { config?: Partial<Filter<VueAppConfig, string | boolean>> }
   sourcemap: Required<Exclude<ConfigSchema['sourcemap'], boolean>>
   debug: Required<Exclude<ConfigSchema['debug'], true>>
-  builder: '@nuxt/vite-builder' | '@nuxt/webpack-builder' | '@nuxt/rspack-builder' | NuxtBuilder
+  builder: '@nuxt/vite-builder' | '@nuxt/webpack-builder' | '@nuxt/rsbuild-builder' | '@nuxt/rspack-builder' | NuxtBuilder
   postcss: Omit<ConfigSchema['postcss'], 'order'> & { order: Exclude<ConfigSchema['postcss']['order'], string> }
   webpack: ConfigSchema['webpack'] & {
     $client: ConfigSchema['webpack']
@@ -140,6 +144,16 @@ export interface ViteConfig extends Omit<ViteUserConfig, 'publicDir'> {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ViteOptions extends ViteConfig {}
+
+export interface RsbuildOptions extends RsbuildConfig {
+  /**
+   * Options passed to @rsbuild/plugin-vue.
+   *
+   * `vueLoaderOptions` defaults to the `vue.compilerOptions`, `vue.transformAssetUrls` and `vue.propsDestructure` options.
+   * @see [@rsbuild/plugin-vue](https://rsbuild.rs/plugins/list/plugin-vue)
+   */
+  vue?: RsbuildVuePluginOptions
+}
 
 // App Config
 export interface CustomAppConfig {

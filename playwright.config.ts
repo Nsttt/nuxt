@@ -8,6 +8,7 @@ type E2eConfigOptions = ConfigOptions & MatrixOptions
 const e2eMatrix = [
   { builder: 'vite', isDev: true },
   { builder: 'vite', isDev: false },
+  { builder: 'rsbuild', isDev: false },
   { builder: 'rspack', isDev: false },
   { builder: 'webpack', isDev: false },
 ] as const
@@ -61,7 +62,7 @@ export default defineConfig<E2eConfigOptions>({
           ...devices['Desktop Chrome'],
           isDev: entry.isDev,
           isBuilt: !entry.isDev,
-          isWebpack: entry.builder === 'webpack' || entry.builder === 'rspack',
+          isWebpack: entry.builder === 'webpack' || entry.builder === 'rspack' || entry.builder === 'rsbuild',
           builder: entry.builder,
           defaults: {
             nuxt: {
